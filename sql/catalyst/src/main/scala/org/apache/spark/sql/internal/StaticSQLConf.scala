@@ -44,6 +44,12 @@ object StaticSQLConf {
     .stringConf
     .createWithDefault("global_temp")
 
+  // Llap enabled configuration for HDP
+  val LLAP_ENABLED = buildStaticConf("spark.sql.hive.llap")
+    .internal()
+    .booleanConf
+    .createWithDefault(false)
+
   // This is used to control when we will split a schema's JSON string to multiple pieces
   // in order to fit the JSON string in metastore's table property (by default, the value has
   // a length restriction of 4000 characters, so do not use a value larger than 4000 as the default

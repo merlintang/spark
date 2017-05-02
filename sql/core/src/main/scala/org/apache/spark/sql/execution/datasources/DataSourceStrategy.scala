@@ -218,19 +218,31 @@ class FindDataSourceTable(sparkSession: SparkSession) extends Rule[LogicalPlan] 
     val plan = catalogProxy.getCachedPlan(qualifiedTableName, new Callable[LogicalPlan]() {
       override def call(): LogicalPlan = {
         val pathOption = table.storage.locationUri.map("path" -> CatalogUtils.URIToString(_))
-        val dataSource =
-          DataSource(
-            sparkSession,
-            // In older version(prior to 2.1) of Spark, the table schema can be empty and should be
-            // inferred at runtime. We should still support it.
-            userSpecifiedSchema = if (table.schema.isEmpty) None else Some(table.schema),
-            partitionColumns = table.partitionColumnNames,
-            bucketSpec = table.bucketSpec,
-            className = table.provider.get,
-            options = table.storage.properties ++ pathOption,
-            catalogTable = Some(table))
 
-        LogicalRelation(dataSource.resolveRelation(checkFilesExist = false), table)
+        if(SparkSession.isLLAPEnabled(sparkSession.sparkContext.conf)) {
+          val llapDataSource =
+            DataSource(
+            sparkSession = sparkSession,
+            className = "org.apache.spark.sql.hive.llap",
+            options = Map(
+              "table" -> (qualifiedTableName.database + "." + qualifiedTableName.name),
+              "url" -> sparkSession.sessionState.getConnectionUrl(sparkSession)))
+            LogicalRelation(llapDataSource.resolveRelation(checkFilesExist = false), table)
+          } else {
+            val dataSource =
+              DataSource(
+                sparkSession,
+                // In older version(prior to 2.1) of Spark, the table schema can be empty
+                // and should be inferred at runtime. We should still support it.
+                userSpecifiedSchema = if (table.schema.isEmpty) None else Some(table.schema),
+                partitionColumns = table.partitionColumnNames,
+                bucketSpec = table.bucketSpec,
+                className = table.provider.get,
+                options = table.storage.properties ++ pathOption,
+                catalogTable = Some(table))
+            LogicalRelation(dataSource.resolveRelation(checkFilesExist = false), table)
+          }
+
       }
     }).asInstanceOf[LogicalRelation]
 

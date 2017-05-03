@@ -1078,12 +1078,11 @@ object SparkSession {
     }
   }
 
-
   /**
-    * Return true if `spark.sql.hive.llap=true` and classes can be loaded.
-    * On class loading errors, it will fails.
-    * Return false if `spark.sql.hive.llap=false`.
-    */
+   * Return true if `spark.sql.hive.llap=true` and classes can be loaded.
+   * On class loading errors, it will fails.
+   * Return false if `spark.sql.hive.llap=false`.
+   */
   private[spark] def isLLAPEnabled(conf: SparkConf): Boolean = {
     if (conf.get(LLAP_ENABLED.key, "false") == "true") {
       try {

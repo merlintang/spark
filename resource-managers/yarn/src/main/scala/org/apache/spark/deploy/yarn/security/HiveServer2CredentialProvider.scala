@@ -87,9 +87,9 @@ private[security] class HiveServer2CredentialProvider extends ServiceCredentialP
   }
 
   /**
-    * Run some code as the real logged in user (which may differ from the current user, for
-    * example, when using proxying).
-    */
+   * Run some code as the real logged in user (which may differ from the current user, for
+   * example, when using proxying).
+   */
   private def doAsRealUser[T](fn: => T): T = {
     val currentUser = UserGroupInformation.getCurrentUser()
     val realUser = Option(currentUser.getRealUser()).getOrElse(currentUser)

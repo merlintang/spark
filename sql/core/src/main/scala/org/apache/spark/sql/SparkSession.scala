@@ -1033,7 +1033,7 @@ object SparkSession {
 
   // HDP Llap SessionStateBuilder
   private val LLAP_SESSION_STATE_BUILDER_CLASS_NAME =
-  "org.apache.spark.sql.hive.LlapSessionStateBuilder"
+  "org.apache.spark.sql.hive.llap.LlapSessionStateBuilder"
 
   private def sessionStateClassName(conf: SparkConf): String = {
     conf.get(CATALOG_IMPLEMENTATION) match {

@@ -102,18 +102,22 @@ private[sql] class SessionState(
   // ------------------------------------------------------
   //  Helper methods for HDP Ranger with LLAP
   // ------------------------------------------------------
-  /**
-   * @return User name for the STS connection
-   */
-  def getUserString(): String = {
-    System.getProperty("user.name")
+
+  private var userName = System.getProperty("user.name")
+
+  def setUser(user: String): Unit = {
+    userName = user
+  }
+
+  def getUser(): String = {
+    userName
   }
 
   /**
-   * Return connection URL (with replaced proxy user name if exists).
-   */
+    * Return connection URL (with replaced proxy user name if exists).
+    */
   def getConnectionUrl(sparkSession: SparkSession): String = {
-    var userString = getUserString()
+    var userString = getUser()
     if (userString == null) {
       userString = ""
     }

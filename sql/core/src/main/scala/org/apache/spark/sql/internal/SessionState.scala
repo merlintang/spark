@@ -114,8 +114,8 @@ private[sql] class SessionState(
   }
 
   /**
-    * Return connection URL (with replaced proxy user name if exists).
-    */
+   * Return connection URL (with replaced proxy user name if exists).
+   */
   def getConnectionUrl(sparkSession: SparkSession): String = {
     var userString = getUser()
     if (userString == null) {

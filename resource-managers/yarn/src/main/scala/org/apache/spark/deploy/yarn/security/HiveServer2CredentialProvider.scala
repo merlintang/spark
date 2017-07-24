@@ -39,9 +39,9 @@ private[security] class HiveServer2CredentialProvider extends ServiceCredentialP
   override def serviceName: String = "hiveserver2"
 
   override def obtainCredentials(
-                                  hadoopConf: Configuration,
-                                  sparkConf: SparkConf,
-                                  creds: Credentials): Option[Long] = {
+      hadoopConf: Configuration,
+      sparkConf: SparkConf,
+      creds: Credentials): Option[Long] = {
 
     var con: Connection = null
     try {

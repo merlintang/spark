@@ -21,15 +21,15 @@ import org.apache.spark.scheduler.{LiveListenerBus, SparkListener, SparkListener
 import org.apache.spark.util.ListenerBus
 
 /**
- * A ML listener bus to forward events to StreamingListeners. This one will wrap received
- * Streaming events as MLListenEvent and send them to Spark listener bus.
+ * A ML listener bus to forward events to MLListeners. This one will wrap received
+ * ML events as MLListenEvent and send them to Spark listener bus.
  */
 private[ML] class MLListenerBus (sparkListenerBus: LiveListenerBus)
   extends SparkListener with ListenerBus[MLListener, MLListenerEvent] {
 
 
   /**
-   * Post a StreamingListenerEvent to the Spark listener bus asynchronously. This event will be
+   * Post a MLListenerEvent to the Spark listener bus asynchronously. This event will be
    * dispatched to all StreamingListeners in the thread of the Spark listener bus.
    */
   def post(event: MLListenerEvent) {

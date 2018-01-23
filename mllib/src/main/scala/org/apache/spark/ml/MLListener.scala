@@ -17,36 +17,39 @@
 
 package org.apache.spark.ml
 
+import org.apache.spark.SparkContext
 import org.apache.spark.annotation.DeveloperApi
+import org.apache.spark.scheduler.SparkListenerEvent
+import org.apache.spark.sql.Dataset
 
 
 /**
  * :: DeveloperApi ::
- * Base trait for events related to StreamingListener
+ * Base trait for events related to MLListener
  */
 @DeveloperApi
-sealed trait MLListenerEvent
-
-@DeveloperApi
-case class MLListenerModelFitStarted(time: Long) extends MLListenerEvent
-
-@DeveloperApi
-case class MLListenerModelFitEnd(time: Long) extends MLListenerEvent
-
+sealed trait MLListenEvent extends SparkListenerEvent
 
 /**
- * :: DeveloperApi ::
- * A listener interface for receiving information about an ongoing streaming
- * computation.
+ * Listener interface for Spark ML events.
  */
-@DeveloperApi
 trait MLListener {
-
-  /** Called when the pipeline has been started to fit data */
-  def onModelFitStarted(streamingStarted: MLListenerModelFitStarted) { }
-
-  /** Called when the pipeline has been started to fit data */
-  def onModelFitEnd(streamingStarted: MLListenerModelFitEnd) { }
-
+  def onEvent(event: MLListenEvent): Unit = {
+    // SparkContext.getOrCreate().listenerBus.post(event)
+  }
 }
 
+@DeveloperApi
+case class CreatePipelineEvent(pipeline: Pipeline, dataset: Dataset[_]) extends MLListenEvent
+
+@DeveloperApi
+case class CreateModelEvent(model: PipelineModel) extends MLListenEvent
+
+@DeveloperApi
+case class SavePipelineEvent(directory: String) extends MLListenEvent
+
+@DeveloperApi
+case class SaveModelEvent(directory: String) extends MLListenEvent
+
+@DeveloperApi
+case class TransformEvent(model: PipelineModel, dataset: Dataset[_]) extends MLListenEvent

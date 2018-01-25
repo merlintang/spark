@@ -46,10 +46,10 @@ case class CreatePipelineEvent(pipeline: Pipeline, dataset: Dataset[_]) extends 
 case class CreateModelEvent(model: PipelineModel) extends MLListenEvent
 
 @DeveloperApi
-case class SavePipelineEvent(directory: String) extends MLListenEvent
+case class SavePipelineEvent(uid: String, directory: String) extends MLListenEvent
 
 @DeveloperApi
-case class SaveModelEvent(directory: String) extends MLListenEvent
+case class SaveModelEvent(uid: String, directory: String) extends MLListenEvent
 
 @DeveloperApi
 case class TransformEvent(model: PipelineModel, dataset: Dataset[_]) extends MLListenEvent

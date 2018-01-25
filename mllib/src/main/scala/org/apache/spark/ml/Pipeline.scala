@@ -220,7 +220,7 @@ object Pipeline extends MLReadable[Pipeline] {
 
     override protected def saveImpl(path: String): Unit = {
       SharedReadWrite.saveImpl(instance, instance.getStages, sc, path)
-      postToAll(SavePipelineEvent(path))
+      postToAll(SavePipelineEvent(instance.uid, path))
     }
   }
 
@@ -359,7 +359,7 @@ object PipelineModel extends MLReadable[PipelineModel] {
     override protected def saveImpl(path: String): Unit = {
       SharedReadWrite.saveImpl(instance,
         instance.stages.asInstanceOf[Array[PipelineStage]], sc, path)
-      postToAll(SaveModelEvent(path))
+      postToAll(SaveModelEvent(instance.uid, path))
     }
   }
 

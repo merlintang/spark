@@ -220,6 +220,11 @@ object Pipeline extends MLReadable[Pipeline] {
 
     override protected def saveImpl(path: String): Unit = {
       SharedReadWrite.saveImpl(instance, instance.getStages, sc, path)
+      this.addListener(new MLListener {
+        override def onEvent(event: MLListenEvent): Unit = {
+          SparkContext.getOrCreate().listenerBus.post(event)
+        }
+      })
       postToAll(SavePipelineEvent(instance.uid, path))
     }
   }
@@ -359,6 +364,11 @@ object PipelineModel extends MLReadable[PipelineModel] {
     override protected def saveImpl(path: String): Unit = {
       SharedReadWrite.saveImpl(instance,
         instance.stages.asInstanceOf[Array[PipelineStage]], sc, path)
+      this.addListener(new MLListener {
+        override def onEvent(event: MLListenEvent): Unit = {
+          SparkContext.getOrCreate().listenerBus.post(event)
+        }
+      })
       postToAll(SaveModelEvent(instance.uid, path))
     }
   }

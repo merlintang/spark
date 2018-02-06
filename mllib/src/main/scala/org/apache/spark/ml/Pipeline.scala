@@ -328,6 +328,11 @@ class PipelineModel private[ml] (
   override def transform(dataset: Dataset[_]): DataFrame = {
     transformSchema(dataset.schema, logging = true)
     val result = stages.foldLeft(dataset.toDF)((cur, transformer) => transformer.transform(cur))
+    this.addListener(new MLListener {
+      override def onEvent(event: MLListenEvent): Unit = {
+        SparkContext.getOrCreate().listenerBus.post(event)
+      }
+    })
     postToAll(TransformEvent(this, dataset))
     result
   }

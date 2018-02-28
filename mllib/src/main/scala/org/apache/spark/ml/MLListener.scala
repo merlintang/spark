@@ -52,4 +52,7 @@ case class SavePipelineEvent(uid: String, directory: String) extends MLListenEve
 case class SaveModelEvent(uid: String, directory: String) extends MLListenEvent
 
 @DeveloperApi
+case class LoadModelEvent(directory: String, model: PipelineModel) extends MLListenEvent
+
+@DeveloperApi
 case class TransformEvent(model: PipelineModel, dataset: Dataset[_]) extends MLListenEvent

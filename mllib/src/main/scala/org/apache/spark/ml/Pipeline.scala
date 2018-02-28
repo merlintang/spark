@@ -352,15 +352,29 @@ class PipelineModel private[ml] (
 }
 
 @Since("1.6.0")
-object PipelineModel extends MLReadable[PipelineModel] {
+object PipelineModel extends MLReadable[PipelineModel] with ListenerBus[MLListener, MLListenEvent]{
 
   import Pipeline.SharedReadWrite
 
+  override protected def doPostEvent(
+      listener: MLListener,
+      event: MLListenEvent): Unit = {
+    listener.onEvent(event)
+  }
   @Since("1.6.0")
   override def read: MLReader[PipelineModel] = new PipelineModelReader
 
   @Since("1.6.0")
-  override def load(path: String): PipelineModel = super.load(path)
+  override def load(path: String): PipelineModel = {
+    val pipelinemode = super.load(path)
+    this.addListener(new MLListener {
+      override def onEvent(event: MLListenEvent): Unit = {
+        SparkContext.getOrCreate().listenerBus.post(event)
+      }
+    })
+    postToAll(LoadModelEvent(path, pipelinemode))
+    pipelinemode
+  }
 
   private[PipelineModel] class PipelineModelWriter(instance: PipelineModel) extends MLWriter {
 

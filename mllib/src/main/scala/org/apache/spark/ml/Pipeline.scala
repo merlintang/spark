@@ -333,7 +333,7 @@ class PipelineModel private[ml] (
         SparkContext.getOrCreate().listenerBus.post(event)
       }
     })
-    postToAll(TransformEvent(this, dataset))
+    postToAll(TransformEvent(this, dataset, result))
     result
   }
 

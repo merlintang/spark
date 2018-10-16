@@ -40,7 +40,7 @@ trait MLListener {
 }
 
 @DeveloperApi
-case class CreatePipelineEvent(pipeline: Pipeline, dataset: Dataset[_]) extends MLListenEvent
+case class CreatePipelineEvent(pipeline: Pipeline) extends MLListenEvent
 
 @DeveloperApi
 case class CreateModelEvent(model: PipelineModel) extends MLListenEvent
@@ -52,4 +52,4 @@ case class SavePipelineEvent(uid: String, directory: String) extends MLListenEve
 case class SaveModelEvent(uid: String, directory: String) extends MLListenEvent
 
 @DeveloperApi
-case class TransformEvent(model: PipelineModel, dataset: Dataset[_]) extends MLListenEvent
+case class TransformEvent(model: PipelineModel) extends MLListenEvent

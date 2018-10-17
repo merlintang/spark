@@ -182,8 +182,8 @@ class Pipeline @Since("1.4.0") (
           SparkContext.getOrCreate().listenerBus.post(event)
         }
       })
-      postToAll(CreatePipelineEvent(this))
-      postToAll(CreateModelEvent(model))
+      postToAll(CreatePipelineEvent(this.uid, dataset))
+      postToAll(CreateModelEvent(model.uid))
     }
     model
   }
@@ -343,7 +343,7 @@ class PipelineModel private[ml] (
         SparkContext.getOrCreate().listenerBus.post(event)
       }
     })
-    postToAll(TransformEvent(this))
+    postToAll(TransformEvent(this.uid))
     }
     result
   }

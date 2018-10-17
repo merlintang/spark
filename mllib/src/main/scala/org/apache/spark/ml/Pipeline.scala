@@ -21,11 +21,9 @@ import java.{util => ju}
 
 import scala.collection.JavaConverters._
 import scala.collection.mutable.ListBuffer
-
 import org.apache.hadoop.fs.Path
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
-
 import org.apache.spark.SparkContext
 import org.apache.spark.annotation.{DeveloperApi, Since}
 import org.apache.spark.internal.Logging
@@ -363,15 +361,32 @@ class PipelineModel private[ml] (
 }
 
 @Since("1.6.0")
-object PipelineModel extends MLReadable[PipelineModel] {
+object PipelineModel extends MLReadable[PipelineModel] with ListenerBus[MLListener, MLListenEvent] {
 
   import Pipeline.SharedReadWrite
+
+  override protected def doPostEvent(
+    listener: MLListener,
+    event: MLListenEvent): Unit = {
+    listener.onEvent(event)
+  }
 
   @Since("1.6.0")
   override def read: MLReader[PipelineModel] = new PipelineModelReader
 
   @Since("1.6.0")
-  override def load(path: String): PipelineModel = super.load(path)
+  override def load(path: String): PipelineModel = {
+    val pipelinemode = super.load(path)
+    if (SparkContext.getOrCreate().getConf.getBoolean("use.sac", false)) {
+      this.addListener(new MLListener {
+        override def onEvent(event: MLListenEvent): Unit = {
+          SparkContext.getOrCreate().listenerBus.post(event)
+        }
+      })
+      postToAll(LoadModelEvent(path, pipelinemode.uid))
+    }
+    pipelinemode
+  }
 
   private[PipelineModel] class PipelineModelWriter(instance: PipelineModel) extends MLWriter with
       ListenerBus[MLListener, MLListenEvent] {

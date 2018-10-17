@@ -53,3 +53,6 @@ case class SaveModelEvent(uid: String, directory: String) extends MLListenEvent
 
 @DeveloperApi
 case class TransformEvent(uid: String) extends MLListenEvent
+
+@DeveloperApi
+case class LoadModelEvent(directory: String, uid: String) extends MLListenEvent

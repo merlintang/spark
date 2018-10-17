@@ -146,14 +146,14 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
     })
   }
 
-  /*
+
   testWithPipeline("pipelineJobTracker") { (df, newPipeline, checkEvents) =>
     val pipelineModel = newPipeline.fit(df)
 
-    checkEvents(CreatePipelineEvent(newPipeline, df) :: CreateModelEvent(
+    checkEvents(CreatePipelineEvent(newPipeline) :: CreateModelEvent(
       pipelineModel) :: Nil)
   }
-  */
+
 
   test("pipeline with duplicate stages") {
     val estimator = mock[Estimator[MyModel]]
@@ -218,28 +218,12 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
     })
   }
 
-  /*
   testWithPipelineModel(
     "pipeline model transform tracker") { (df, newPipelineModel, checkEvents) =>
     val output = newPipelineModel.transform(df)
-    checkEvents(TransformEvent(newPipelineModel, df, output) :: Nil)
+    checkEvents(TransformEvent(newPipelineModel) :: Nil)
   }
-  */
 
-  test("PipelineModel.copy") {
-    val hashingTF = new HashingTF()
-      .setNumFeatures(100)
-    val model = new PipelineModel("pipelineModel", Array[Transformer](hashingTF))
-      .setParent(new Pipeline())
-    val copied = model.copy(ParamMap(hashingTF.numFeatures -> 10))
-
-    assert(copied.uid === model.uid,
-      "copy should create an instance with the same UID")
-    assert(copied.stages(0).asInstanceOf[HashingTF].getNumFeatures === 10,
-      "copy should handle extra stage params")
-    assert(copied.parent === model.parent,
-      "copy should create an instance with the same parent")
-  }
 
   test("pipeline model constructors") {
     val transform0 = mock[Transformer]
@@ -289,7 +273,6 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
     })
   }
 
-  /*
   testWithPipelineReadWrite(
     "Pipeline read/write tracker") { (pipelineWritter, uid, path, checkEvents) =>
 
@@ -297,7 +280,7 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
 
     checkEvents(SavePipelineEvent(uid, path) :: Nil)
   }
-  */
+
 
   test("Pipeline read/write with non-Writable stage") {
     val unWritableStage = new UnWritableStage("unwritableStage")
@@ -344,7 +327,7 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
     })
   }
 
-  /*
+
   testWithPipelineModelReadWrite(
     "PipelineModel read/write tracker") { (pipelineModelWritter, uid, path, checkEvents) =>
 
@@ -352,7 +335,7 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
 
     checkEvents(SaveModelEvent(uid, path) :: Nil)
   }
-  */
+
 
   test("PipelineModel read/write: getStagePath") {
     val stageUid = "myStage"

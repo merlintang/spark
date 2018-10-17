@@ -150,8 +150,8 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
   testWithPipeline("pipelineJobTracker") { (df, newPipeline, checkEvents) =>
     val pipelineModel = newPipeline.fit(df)
 
-    checkEvents(CreatePipelineEvent(newPipeline) :: CreateModelEvent(
-      pipelineModel) :: Nil)
+    checkEvents(CreatePipelineEvent(newPipeline.uid, df) :: CreateModelEvent(
+      pipelineModel.uid) :: Nil)
   }
 
 
@@ -221,7 +221,7 @@ class PipelineSuite extends SparkFunSuite with MLlibTestSparkContext with Defaul
   testWithPipelineModel(
     "pipeline model transform tracker") { (df, newPipelineModel, checkEvents) =>
     val output = newPipelineModel.transform(df)
-    checkEvents(TransformEvent(newPipelineModel) :: Nil)
+    checkEvents(TransformEvent(newPipelineModel.uid) :: Nil)
   }
 
 
